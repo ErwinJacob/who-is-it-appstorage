@@ -34,7 +34,7 @@ struct PersonView: View {
         self.person = person
         choosen = person.choosen
         hidden = person.hidden
-
+x
     }
 
     var body: some View {
