@@ -43,7 +43,7 @@ struct PersonView: View {
                 ZStack{
                     if choosen{
                         Circle()
-                            .stroke(Color.red, lineWidth: 3)
+                            .stroke(Color.green, lineWidth: 4)
                     }
                     
                     if !hidden{

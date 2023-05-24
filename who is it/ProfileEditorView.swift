@@ -6,13 +6,15 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct ProfileEditorView: View {
 
     @State var person: PersonModel
-    @State private var showSheet = false
     @ObservedObject var personsStorageManager: PersonsStorageManager
     @Environment(\.presentationMode) var presentationMode
+    @State private var pickerImageData: PhotosPickerItem?
+    @State var pickerImage: Image?
 
 
     var body: some View {
@@ -21,17 +23,35 @@ struct ProfileEditorView: View {
                 
                 Spacer()
                 
-                Button {
-                    showSheet = true
-                } label: {
-                    Image(uiImage: UIImage(data: person.imageData)!)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .clipShape(Circle())
+                PhotosPicker(selection: $pickerImageData) {
+                    if let pickerImage{
+                        pickerImage
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .clipShape(Circle())
+                    }
+                    else{
+                        Image(uiImage: UIImage(data: person.imageData)!)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .clipShape(Circle())
+                    }
                 }
-                    .frame(width: proxy.size.width*0.5, height: proxy.size.width*0.5)
-//                    .padding(.top, proxy.size.height*0.1)
+                .frame(width: proxy.size.width*0.5, height: proxy.size.width*0.5)
+                .onChange(of: pickerImageData) { _ in
+                            Task {
+                                if let data = try? await pickerImageData?.loadTransferable(type: Data.self) {
+                                    if let uiImage = UIImage(data: data) {
+                                        pickerImage = Image(uiImage: uiImage)
+                                        return
+                                    }
+                                    
+                                }
 
+                                print("Failed")
+                            }
+                        }
+                
                 Spacer()
                 
                 TextField("Imię", text: $person.name)
@@ -45,8 +65,15 @@ struct ProfileEditorView: View {
                 Spacer()
                                 
                 Button {
-                    personsStorageManager.updateAppStorage()
-                    presentationMode.wrappedValue.dismiss()
+
+                    Task{
+                        if let data = try? await pickerImageData?.loadTransferable(type: Data.self) {
+                            person.imageData = data
+                            personsStorageManager.updateAppStorage()
+                            presentationMode.wrappedValue.dismiss()
+
+                        }
+                    }
                 } label: {
                     ZStack{
                         RoundedRectangle(cornerRadius: 10)
@@ -65,9 +92,6 @@ struct ProfileEditorView: View {
                 Spacer()
             }
             .frame(width: proxy.size.width, height: proxy.size.height)
-            .sheet(isPresented: $showSheet) {
-                ImagePicker(sourceType: .photoLibrary, selectedImage: $person.imageData)
-            }
 //            .navigationBarBackButtonHidden(true)
         }
     }

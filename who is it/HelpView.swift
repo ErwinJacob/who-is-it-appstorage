@@ -53,7 +53,6 @@ struct HelpView: View {
                                 
                             }
                         }
-                        //                    .padding(.bottom, proxy.size.height*0.001)
                         
                         Button {
                             //dont show again
@@ -69,8 +68,6 @@ struct HelpView: View {
                                 
                             }                    }
                         .padding(.bottom, proxy.size.height*0.05)
-                        
-                        
                     }
                 }
                 .frame(width: proxy.size.width, height: proxy.size.height)
