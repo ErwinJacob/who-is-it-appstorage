@@ -26,7 +26,8 @@ struct ProfileEditorView: View {
                 } label: {
                     Image(uiImage: UIImage(data: person.imageData)!)
                         .resizable()
-
+                        .aspectRatio(contentMode: .fill)
+                        .clipShape(Circle())
                 }
                     .frame(width: proxy.size.width*0.5, height: proxy.size.width*0.5)
 //                    .padding(.top, proxy.size.height*0.1)
@@ -38,15 +39,28 @@ struct ProfileEditorView: View {
                     .bold()
                     .font(.title)
                     .frame(width: proxy.size.width*0.7)
+                    .multilineTextAlignment(.center)
                 
 
                 Spacer()
-                
-                Button("Zapisz"){
+                                
+                Button {
                     personsStorageManager.updateAppStorage()
                     presentationMode.wrappedValue.dismiss()
+                } label: {
+                    ZStack{
+                        RoundedRectangle(cornerRadius: 10)
+                            .frame(width: proxy.size.width*0.65, height: proxy.size.height*0.05)
+                            .foregroundColor(.green)
+                        Text("Save :)")
+                            .foregroundColor(.white)
+                            .bold()
+
+                    }
+                        .padding(.bottom, proxy.size.height*0.05)
 
                 }
+
 
                 Spacer()
             }
@@ -54,6 +68,7 @@ struct ProfileEditorView: View {
             .sheet(isPresented: $showSheet) {
                 ImagePicker(sourceType: .photoLibrary, selectedImage: $person.imageData)
             }
+//            .navigationBarBackButtonHidden(true)
         }
     }
 }

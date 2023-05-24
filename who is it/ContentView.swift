@@ -17,12 +17,15 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if horizontalSizeClass == .compact && verticalSizeClass == .regular {
-                // Landscape mode
-                EditView(personsStorageManager: personsStorageManager)
-            } else {
-                // Portrait mode or other cases
-                GameView(personsStorageManager: personsStorageManager)
+            ZStack{
+                if horizontalSizeClass == .compact && verticalSizeClass == .regular {
+                    // Landscape mode
+                    EditView(personsStorageManager: personsStorageManager)
+                } else {
+                    // Portrait mode or other cases
+                    GameView(personsStorageManager: personsStorageManager)
+                }
+                HelpView()
             }
         }
     }
