@@ -15,6 +15,7 @@ struct ProfileEditorView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var pickerImageData: PhotosPickerItem?
     @State var pickerImage: Image?
+    @State var name: String = ""
 
 
     var body: some View {
@@ -54,13 +55,15 @@ struct ProfileEditorView: View {
                 
                 Spacer()
                 
-                TextField("Imię", text: $person.name)
+                TextField("Imię", text: $name)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .bold()
                     .font(.title)
                     .frame(width: proxy.size.width*0.7)
                     .multilineTextAlignment(.center)
-                
+                    .onAppear{
+                        self.name = person.name
+                    }
 
                 Spacer()
                                 
@@ -69,9 +72,15 @@ struct ProfileEditorView: View {
                     Task{
                         if let data = try? await pickerImageData?.loadTransferable(type: Data.self) {
                             person.imageData = data
+                            person.name = name
                             personsStorageManager.updateAppStorage()
                             presentationMode.wrappedValue.dismiss()
 
+                        }
+                        else{
+                            person.name = name
+                            personsStorageManager.updateAppStorage()
+                            presentationMode.wrappedValue.dismiss()
                         }
                     }
                 } label: {
